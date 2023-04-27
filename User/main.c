@@ -15,12 +15,12 @@ int main(void)
   APP_GPIO_Config();
   BSP_USART_Config();
   printf("PY32F0xx LED Toggle Demo\r\nSystem Clock: %ld\r\n", SystemCoreClock);
-  
+  uint32_t i = 0;
   while (1)
   {
-    HAL_Delay(1000);                            
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
-    printf("echo\r\n");
+    HAL_Delay(50);                            
+    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_11);
+    printf("echo, num:[%d]\r\n", i++);
   }
 }
 
@@ -30,7 +30,7 @@ static void APP_GPIO_Config(void)
 
   __HAL_RCC_GPIOA_CLK_ENABLE();
   // PA0
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Pin = GPIO_PIN_11;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;

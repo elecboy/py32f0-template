@@ -24,8 +24,8 @@ FLASH_PROGRM	?= pyocd
 
 #ARM_TOOCHAIN	?= /opt/gcc-arm/gcc-arm-11.2-2022.02-x86_64-arm-none-eabi/bin
 #ARM_TOOCHAIN	?= /opt/gcc-arm/arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi/bin
-ARM_TOOCHAIN	?= /opt/gcc-arm/arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin
-
+#ARM_TOOCHAIN	?= /opt/gcc-arm/arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin
+ARM_TOOCHAIN	?= /opt/homebrew/bin
 # path to JLinkExe
 JLINKEXE		?= /opt/SEGGER/JLink/JLinkExe
 # JLink device type, options:
@@ -57,6 +57,9 @@ LIB_FLAGS       = PY32F030x8
 # C source folders
 CDIRS	:= User \
 		Libraries/CMSIS/Device/PY32F0xx/Source
+#CDIRS	:= Examples/HAL/GPIO/LED_Toggle \
+#		Libraries/CMSIS/Device/PY32F0xx/Source
+
 # C source files (if there are any single ones)
 CFILES := 
 
