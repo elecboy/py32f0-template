@@ -82,7 +82,8 @@ static void APP_AdcConfig(void)
   AdcHandle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV1;            /* ADC clock */
   AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;                      /* Valid resolution is around 8 bit */
   AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;                      /* Right alignment */
-  AdcHandle.Init.ScanConvMode = ADC_SCAN_DIRECTION_BACKWARD;
+  //AdcHandle.Init.ScanConvMode = ADC_SCAN_DIRECTION_BACKWARD;
+  AdcHandle.Init.ScanConvMode = ADC_SCAN_DIRECTION_FORWARD;
   AdcHandle.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   AdcHandle.Init.LowPowerAutoWait = ENABLE;
   AdcHandle.Init.ContinuousConvMode = ENABLE;
