@@ -25,7 +25,7 @@
 #include "py32f0xx_bsp_printf.h"
 
 /* Private define ------------------------------------------------------------*/
-#define BUF_SIZE    64
+#define BUF_SIZE    12
 /* Private variables ---------------------------------------------------------*/
 /* Private user code ---------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -58,8 +58,8 @@ int main(void)
   {
     if (__HAL_DMA_GET_FLAG(DMA1, DMA_ISR_TCIF1))
     {
-      printf("ADC: %ld %ld %ld %ld\r\n", *gADCxConvertedData+4, *(gADCxConvertedData + 5), \
-              *(gADCxConvertedData + 6), *(gADCxConvertedData + 7));
+      printf("ADC: %ld %ld %ld %ld\r\n", *gADCxConvertedData, *(gADCxConvertedData + 1), \
+              *(gADCxConvertedData + 2), *(gADCxConvertedData + 3));
       HAL_Delay(100);
       __HAL_DMA_CLEAR_FLAG(DMA1, DMA_IFCR_CTCIF1);
     }
@@ -97,16 +97,9 @@ static void APP_AdcConfig(void)
     APP_ErrorHandler();
   }
 
-  sConfig_0.Rank = ADC_RANK_CHANNEL_NUMBER;
-  sConfig_0.Channel = ADC_CHANNEL_0;
-  if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig_0) != HAL_OK)
-  {
-    APP_ErrorHandler();
-  }
-
-  sConfig_1.Rank = ADC_RANK_CHANNEL_NUMBER;
-  sConfig_1.Channel = ADC_CHANNEL_1;
-  if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig_1) != HAL_OK)
+  sConfig_vref.Rank = ADC_RANK_CHANNEL_NUMBER;
+  sConfig_vref.Channel = ADC_CHANNEL_12;
+  if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig_vref) != HAL_OK)
   {
     APP_ErrorHandler();
   }
@@ -118,9 +111,16 @@ static void APP_AdcConfig(void)
     APP_ErrorHandler();
   }
 
-  sConfig_vref.Rank = ADC_RANK_CHANNEL_NUMBER;
-  sConfig_vref.Channel = ADC_CHANNEL_12;
-  if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig_vref) != HAL_OK)
+  sConfig_0.Rank = ADC_RANK_CHANNEL_NUMBER;
+  sConfig_0.Channel = ADC_CHANNEL_0;
+  if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig_0) != HAL_OK)
+  {
+    APP_ErrorHandler();
+  }
+
+  sConfig_1.Rank = ADC_RANK_CHANNEL_NUMBER;
+  sConfig_1.Channel = ADC_CHANNEL_1;
+  if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig_1) != HAL_OK)
   {
     APP_ErrorHandler();
   }
