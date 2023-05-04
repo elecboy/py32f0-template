@@ -55,10 +55,10 @@ LDSCRIPT		= Libraries/LDScripts/py32f030x8.ld
 LIB_FLAGS       = PY32F030x8
 
 # C source folders
-CDIRS	:= User \
-		Libraries/CMSIS/Device/PY32F0xx/Source
-#CDIRS	:= Examples/HAL/GPIO/LED_Toggle \
+#CDIRS	:= User \
 #		Libraries/CMSIS/Device/PY32F0xx/Source
+CDIRS	:= test_adc_dma \
+		Libraries/CMSIS/Device/PY32F0xx/Source
 
 # C source files (if there are any single ones)
 CFILES := 
