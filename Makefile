@@ -20,12 +20,22 @@ USE_EPAPER		?= n
 # Programmer, jlink or pyocd
 FLASH_PROGRM	?= pyocd
 
+#ARCH
+UNAME_S := $(shell uname -s)
+
 ##### Toolchains #######
 
 #ARM_TOOCHAIN	?= /opt/gcc-arm/gcc-arm-11.2-2022.02-x86_64-arm-none-eabi/bin
 #ARM_TOOCHAIN	?= /opt/gcc-arm/arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi/bin
 #ARM_TOOCHAIN	?= /opt/gcc-arm/arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin
-ARM_TOOCHAIN	?= /opt/homebrew/bin
+
+ifeq ($(UNAME_S),Linux)
+	ARM_TOOCHAIN	?= /opt/arm-gnu-toolchain/bin
+endif
+ifeq ($(UNAME_S),Darwin)
+	ARM_TOOCHAIN	?= /opt/homebrew/bin
+endif
+
 # path to JLinkExe
 JLINKEXE		?= /opt/SEGGER/JLink/JLinkExe
 # JLink device type, options:
