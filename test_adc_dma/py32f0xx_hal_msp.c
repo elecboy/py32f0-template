@@ -40,6 +40,7 @@ static DMA_HandleTypeDef HdmaCh1;
   */
 void HAL_MspInit(void)
 {
+  BSP_HSE_ClockConfig();
 }
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
@@ -50,7 +51,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
   __HAL_RCC_GPIOA_CLK_ENABLE();
  
   /* ADC Channel: PA0   */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);

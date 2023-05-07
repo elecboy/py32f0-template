@@ -22,10 +22,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "py32f0xx_hal.h"
+#include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_bsp_printf.h"
 
 /* Private define ------------------------------------------------------------*/
-#define BUF_SIZE    12
+#define BUF_SIZE    1024
 /* Private variables ---------------------------------------------------------*/
 /* Private user code ---------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -51,7 +52,8 @@ int main(void)
   HAL_Init();
 
   BSP_USART_Config();
-
+  printf("SystemClk:%ld\r\n", SystemCoreClock);
+  
   APP_AdcConfig();
 
   while (1)
