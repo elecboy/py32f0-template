@@ -74,14 +74,14 @@ CDIRS	:= test_adc_dma \
 CFILES := 
 
 # ASM source folders
-ADIRS	:= User
+ADIRS	:= test_adc_dma
 # ASM single files
 AFILES	:= Libraries/CMSIS/Device/PY32F0xx/Source/gcc/startup_py32f030.s
 
 # Include paths
 INCLUDES	:= Libraries/CMSIS/Core/Include \
 			Libraries/CMSIS/Device/PY32F0xx/Include \
-			User
+			test_adc_dma
 
 ifeq ($(USE_LL_LIB),y)
 CDIRS		+= Libraries/PY32F0xx_LL_Driver/Src \

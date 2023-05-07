@@ -23,6 +23,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "py32f0xx_hal.h"
+#include "py32f0xx_hal_i2c.h"
+#include "py32f0xx_bsp_clock.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -80,6 +82,28 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc)
   __HAL_RCC_DMA_RELEASE_RESET();
 
   HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
+}
+
+void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+
+  __HAL_RCC_I2C_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /**
+  PA11     ------> I2C1_SCL
+  PA12     ------> I2C1_SDA
+  */
+  GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_12;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF6_I2C;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  __HAL_RCC_I2C_FORCE_RESET();
+  __HAL_RCC_I2C_RELEASE_RESET();
 }
 
 /************************ (C) COPYRIGHT Puya *****END OF FILE******************/

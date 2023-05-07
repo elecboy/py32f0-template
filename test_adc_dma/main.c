@@ -22,13 +22,18 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "py32f0xx_hal.h"
-#include "py32f0xx_bsp_clock.h"
+#include "py32f0xx_hal_i2c.h"
 #include "py32f0xx_bsp_printf.h"
 
 /* Private define ------------------------------------------------------------*/
 #define BUF_SIZE    1024
 /* Private variables ---------------------------------------------------------*/
+#define I2C_ADDRESS        0xA0     /* host address */
+
+I2C_HandleTypeDef I2cHandle;
+
 /* Private user code ---------------------------------------------------------*/
+static void APP_I2C_Config(void);
 /* Private macro -------------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 void APP_ErrorHandler(void);
@@ -53,7 +58,8 @@ int main(void)
 
   BSP_USART_Config();
   printf("SystemClk:%ld\r\n", SystemCoreClock);
-  
+
+  APP_I2C_Config();
   APP_AdcConfig();
 
   while (1)
@@ -132,6 +138,25 @@ static void APP_AdcConfig(void)
   {
     APP_ErrorHandler();
   }
+}
+
+static void APP_I2C_Config(void)
+{
+  I2cHandle.Instance             = I2C;
+  I2cHandle.Init.ClockSpeed      = 100000;        // 100KHz ~ 400KHz
+  I2cHandle.Init.DutyCycle       = I2C_DUTYCYCLE_16_9;
+  I2cHandle.Init.OwnAddress1     = I2C_ADDRESS;
+  I2cHandle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  I2cHandle.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&I2cHandle) != HAL_OK)
+  {
+    APP_ErrorHandler();
+  }
+}
+
+void APP_I2C_Transmit(uint8_t devAddress, uint8_t memAddress, uint8_t *pData, uint16_t len)
+{
+  HAL_I2C_Mem_Write(&I2cHandle, devAddress, memAddress, I2C_MEMADD_SIZE_8BIT, pData, len, 5000);
 }
 
 void APP_ErrorHandler(void)
