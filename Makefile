@@ -8,7 +8,7 @@ BUILD_DIR		= Build
 ##### Options #####
 
 # Use LL library instead of HAL, y:yes, n:no
-USE_LL_LIB ?= n
+USE_LL_LIB ?= y
 # Enable printf float %f support, y:yes, n:no
 ENABLE_PRINTF_FLOAT	?= n
 # Build with FreeRTOS, y:yes, n:no
@@ -65,23 +65,23 @@ LDSCRIPT		= Libraries/LDScripts/py32f030x8.ld
 LIB_FLAGS       = PY32F030x8
 
 # C source folders
-#CDIRS	:= User \
-#		Libraries/CMSIS/Device/PY32F0xx/Source
-CDIRS	:= test_adc_dma \
+CDIRS	:= User \
+		Libraries/CMSIS/Device/PY32F0xx/Source
+#CDIRS	:= test_adc_dma \
 		Libraries/CMSIS/Device/PY32F0xx/Source
 
 # C source files (if there are any single ones)
 CFILES := 
 
 # ASM source folders
-ADIRS	:= test_adc_dma
+ADIRS	:= User
 # ASM single files
 AFILES	:= Libraries/CMSIS/Device/PY32F0xx/Source/gcc/startup_py32f030.s
 
 # Include paths
 INCLUDES	:= Libraries/CMSIS/Core/Include \
 			Libraries/CMSIS/Device/PY32F0xx/Include \
-			test_adc_dma
+			User
 
 ifeq ($(USE_LL_LIB),y)
 CDIRS		+= Libraries/PY32F0xx_LL_Driver/Src \
