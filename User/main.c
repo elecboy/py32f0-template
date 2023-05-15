@@ -22,7 +22,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-// #include "py32f030xx_ll_Start_Kit.h"
+#include "py32f0xx_bsp_kbd.h"
 #include "py32f0xx_bsp_led.h"
 #include "py32f0xx_bsp_clock.h"
 
@@ -74,15 +74,15 @@ int main(void)
   BSP_LED_Init(LED_GREEN);
 
   /* 初始化按键BUTTON */
-  //BSP_PB_Init(BUTTON_KEY,BUTTON_MODE_GPIO);
+  BSP_PB_Init(BUTTON_KEY,BUTTON_MODE_GPIO);
   
   /* 配置I2C */
   APP_ConfigI2cMaster();
 
   /*等待按键按下*/
-  //while(BSP_PB_GetState(BUTTON_KEY) == 1);
+  while(BSP_PB_GetState(BUTTON_KEY) == 1);
   
-  LL_mDelay(100);
+  // LL_mDelay(100);
   /* 主机发送数据 */
   APP_MasterTransmit_DMA_MEM(I2C_ADDRESS, 0x00, I2C_MEMADD_SIZE_16BIT, (uint8_t *)aTxBuffer, sizeof(aTxBuffer));
   
@@ -105,36 +105,6 @@ int main(void)
   {
   }
 }
-
-/**
-  * @brief  系统时钟配置函数
-  * @param  无
-  * @retval 无
-  */
-// static void APP_SystemClockConfig(void)
-// {
-//   /* 使能HSI */
-//   LL_RCC_HSI_Enable();
-//   while(LL_RCC_HSI_IsReady() != 1)
-//   {
-//   }
-
-//   /* 设置 AHB 分频*/
-//   LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-
-//   /* 配置HSISYS作为系统时钟源 */
-//   LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSISYS);
-//   while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSISYS)
-//   {
-//   }
-
-//   /* 设置 APB1 分频*/
-//   LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
-//   LL_Init1msTick(8000000);
-
-//   /* 更新系统时钟全局变量SystemCoreClock(也可以通过调用SystemCoreClockUpdate函数更新) */
-//   LL_SetSystemCoreClock(8000000);
-// }
 
 /**
   * @brief  I2C配置函数
