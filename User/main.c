@@ -23,6 +23,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 // #include "py32f030xx_ll_Start_Kit.h"
+#include "py32f0xx_bsp_led.h"
+#include "py32f0xx_bsp_clock.h"
 
 /* Private define ------------------------------------------------------------*/
 #define I2C_ADDRESS        0xA0     /* 本机\从机地址 */
@@ -38,8 +40,8 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-uint8_t aTxBuffer[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
-uint8_t aRxBuffer[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t aTxBuffer[24] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+uint8_t aRxBuffer[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 uint8_t         *pBuffPtr   = 0;
 __IO uint16_t   XferCount   = 0;
@@ -47,7 +49,7 @@ __IO uint32_t   Devaddress  = 0;
 __IO uint32_t   State       = I2C_STATE_READY;
 
 /* Private function prototypes -----------------------------------------------*/
-static void APP_SystemClockConfig(void);
+// static void APP_SystemClockConfig(void);
 static void APP_ConfigI2cMaster(void);
 static void APP_MasterTransmit_DMA_MEM(uint16_t DevAddress, uint16_t MemAddress,
   uint16_t MemAddSize, uint8_t *pData, uint16_t Size);
@@ -69,7 +71,7 @@ int main(void)
   BSP_RCC_HSI_24MConfig();
   
   /* 初始化LED */
-  //BSP_LED_Init(LED_GREEN);
+  BSP_LED_Init(LED_GREEN);
 
   /* 初始化按键BUTTON */
   //BSP_PB_Init(BUTTON_KEY,BUTTON_MODE_GPIO);
@@ -109,30 +111,30 @@ int main(void)
   * @param  无
   * @retval 无
   */
-static void APP_SystemClockConfig(void)
-{
-  /* 使能HSI */
-  LL_RCC_HSI_Enable();
-  while(LL_RCC_HSI_IsReady() != 1)
-  {
-  }
+// static void APP_SystemClockConfig(void)
+// {
+//   /* 使能HSI */
+//   LL_RCC_HSI_Enable();
+//   while(LL_RCC_HSI_IsReady() != 1)
+//   {
+//   }
 
-  /* 设置 AHB 分频*/
-  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+//   /* 设置 AHB 分频*/
+//   LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
 
-  /* 配置HSISYS作为系统时钟源 */
-  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSISYS);
-  while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSISYS)
-  {
-  }
+//   /* 配置HSISYS作为系统时钟源 */
+//   LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSISYS);
+//   while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSISYS)
+//   {
+//   }
 
-  /* 设置 APB1 分频*/
-  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
-  LL_Init1msTick(8000000);
+//   /* 设置 APB1 分频*/
+//   LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+//   LL_Init1msTick(8000000);
 
-  /* 更新系统时钟全局变量SystemCoreClock(也可以通过调用SystemCoreClockUpdate函数更新) */
-  LL_SetSystemCoreClock(8000000);
-}
+//   /* 更新系统时钟全局变量SystemCoreClock(也可以通过调用SystemCoreClockUpdate函数更新) */
+//   LL_SetSystemCoreClock(8000000);
+// }
 
 /**
   * @brief  I2C配置函数
@@ -502,7 +504,7 @@ static void APP_CheckEndOfTransfer(void)
   else
   {
     /* 如果数据接收到，则打开 LED */
-    // BSP_LED_On(LED_GREEN);
+    BSP_LED_On(LED_GREEN);
   }
 }
 
@@ -537,7 +539,7 @@ static void APP_LedBlinking(void)
 {
   while (1)
   {
-    // BSP_LED_Toggle(LED_GREEN);
+    BSP_LED_Toggle(LED_GREEN);
     LL_mDelay(500);
   }
 }
