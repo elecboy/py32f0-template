@@ -15,7 +15,7 @@
 
 __IO uint16_t uhADCxConvertedData_Voltage_mVolt = 0;
 
-static uint32_t ADCxConvertedDatas[16];
+static uint32_t ADCxConvertedDatas[4];
 
 static void APP_ADCConfig(void);
 static void APP_TimerInit(void);
@@ -106,24 +106,42 @@ static void APP_DMAConfig(void)
 
   // Remap ADC to LL_DMA_CHANNEL_1
   LL_SYSCFG_SetDMARemap_CH1(LL_SYSCFG_DMA_MAP_ADC);
-  // Transfer from peripheral to memory
-  LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
-  // Set priority
-  LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PRIORITY_HIGH);
-  // Circular mode
-  LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MODE_CIRCULAR);
-  // Peripheral address no increment
-  LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PERIPH_NOINCREMENT);
-  // Memory address no increment
-  LL_DMA_SetMemoryIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MEMORY_INCREMENT);
-  // Peripheral data alignment : Word
-  LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PDATAALIGN_WORD);
-  // Memory data alignment : Word
-  LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_WORD);
-  // Data length
-  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, 4);
-  // Sorce and target address
-  LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_1, (uint32_t)&ADC1->DR, (uint32_t)&ADCxConvertedDatas, LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1));
+  // // Transfer from peripheral to memory
+  // LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
+  // // Set priority
+  // LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PRIORITY_HIGH);
+  // // Circular mode
+  // LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MODE_CIRCULAR);
+  // // Peripheral address no increment
+  // LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PERIPH_NOINCREMENT);
+  // // Memory address no increment
+  // LL_DMA_SetMemoryIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MEMORY_INCREMENT);
+  // // Peripheral data alignment : Word
+  // LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PDATAALIGN_WORD);
+  // // Memory data alignment : Word
+  // LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_WORD);
+  // // Data length
+  // LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, 4);
+  // // Sorce and target address
+  // LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_1, (uint32_t)&ADC1->DR, (uint32_t)&ADCxConvertedDatas, LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1));
+  // // Enable DMA channel 1
+  // LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
+  // // Enable transfer-complete interrupt
+  // LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
+
+  /* DMA通道1初始化 */
+  LL_DMA_InitTypeDef DMA_InitStruct;
+  DMA_InitStruct.PeriphOrM2MSrcAddress  = (uint32_t)&ADC1->DR;
+  DMA_InitStruct.MemoryOrM2MDstAddress  = (uint32_t)&ADCxConvertedDatas;
+  DMA_InitStruct.Direction              = LL_DMA_DIRECTION_PERIPH_TO_MEMORY;
+  DMA_InitStruct.Mode                   = LL_DMA_MODE_CIRCULAR;
+  DMA_InitStruct.PeriphOrM2MSrcIncMode  = LL_DMA_PERIPH_NOINCREMENT;
+  DMA_InitStruct.MemoryOrM2MDstIncMode  = LL_DMA_MEMORY_INCREMENT;
+  DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_WORD;
+  DMA_InitStruct.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_WORD;
+  DMA_InitStruct.NbData                 = 0x00000004U;
+  DMA_InitStruct.Priority               = LL_DMA_PRIORITY_HIGH;
+  LL_DMA_Init(DMA1, LL_DMA_CHANNEL_1, &DMA_InitStruct);
   // Enable DMA channel 1
   LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
   // Enable transfer-complete interrupt
