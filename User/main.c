@@ -84,7 +84,7 @@ static void APP_ADCConfig(void)
   LL_ADC_SetResolution(ADC1, LL_ADC_RESOLUTION_12B);
   LL_ADC_SetResolution(ADC1, LL_ADC_DATA_ALIGN_RIGHT);
   LL_ADC_SetLowPowerMode(ADC1, LL_ADC_LP_MODE_NONE);
-  LL_ADC_SetSamplingTimeCommonChannels(ADC1, LL_ADC_SAMPLINGTIME_41CYCLES_5);
+  LL_ADC_SetSamplingTimeCommonChannels(ADC1, LL_ADC_SAMPLINGTIME_239CYCLES_5);
 
   /* Set TIM1 as trigger source */
   LL_ADC_REG_SetTriggerSource(ADC1, LL_ADC_REG_TRIG_EXT_TIM1_TRGO);
