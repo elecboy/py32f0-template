@@ -106,28 +106,6 @@ static void APP_DMAConfig(void)
 
   // Remap ADC to LL_DMA_CHANNEL_1
   LL_SYSCFG_SetDMARemap_CH1(LL_SYSCFG_DMA_MAP_ADC);
-  // // Transfer from peripheral to memory
-  // LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
-  // // Set priority
-  // LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PRIORITY_HIGH);
-  // // Circular mode
-  // LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MODE_CIRCULAR);
-  // // Peripheral address no increment
-  // LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PERIPH_NOINCREMENT);
-  // // Memory address no increment
-  // LL_DMA_SetMemoryIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MEMORY_INCREMENT);
-  // // Peripheral data alignment : Word
-  // LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PDATAALIGN_WORD);
-  // // Memory data alignment : Word
-  // LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_WORD);
-  // // Data length
-  // LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, 4);
-  // // Sorce and target address
-  // LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_1, (uint32_t)&ADC1->DR, (uint32_t)&ADCxConvertedDatas, LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1));
-  // // Enable DMA channel 1
-  // LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
-  // // Enable transfer-complete interrupt
-  // LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
 
   /* DMA通道1初始化 */
   LL_DMA_InitTypeDef DMA_InitStruct;
