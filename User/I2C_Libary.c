@@ -133,6 +133,7 @@ static uint8_t APP_Buffercmp8(uint8_t* pBuffer1, uint8_t* pBuffer2, uint8_t Buff
 
 void test_at24cxx(void)
 {
+    LL_mDelay(10);
     i2c_write(NULL, I2C_ADDRESS, 0x0, (uint8_t *)aTxBuffer, sizeof(aTxBuffer));
 
     LL_mDelay(10);

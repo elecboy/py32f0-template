@@ -277,7 +277,13 @@ ErrorStatus BSP_I2C_Receive(uint16_t devAddress, uint16_t memAddress, uint8_t *b
   LL_I2C_ClearFlag_ADDR(I2C1);
 
   /* Send memory address */
-  while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1);
+  while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1 && t--)
+  if (t == 0) 
+  {
+    i2cState  = I2C_STATE_READY;
+    return ERROR;
+  }
+  t = timeout;
   if (MemAddSize == I2C_MEMADD_SIZE_8BIT)
   {
     LL_I2C_TransmitData8(I2C1, (memAddress & 0xFF));
@@ -285,19 +291,23 @@ ErrorStatus BSP_I2C_Receive(uint16_t devAddress, uint16_t memAddress, uint8_t *b
   else
   {
     LL_I2C_TransmitData8(I2C1, ((memAddress & 0xFF00) >> 8));
-    while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1);
+    while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1 && t--)
+    if (t == 0) 
+    {
+      i2cState  = I2C_STATE_READY;
+      return ERROR;
+    }
+    t = timeout;
     
     LL_I2C_TransmitData8(I2C1, (memAddress & 0xFF));
   }
-  while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1);
-  // LL_I2C_TransmitData8(I2C1, (uint8_t)(memAddress & 0x00FF));
-  // while (LL_I2C_IsActiveFlag_BTF(I2C1) != 1 && t--)
-  // if (t == 0) 
-  // {
-  //   i2cState  = I2C_STATE_READY;
-  //   return ERROR;
-  // }
-  // t = timeout;
+  while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1  && t--)
+  if (t == 0) 
+  {
+    i2cState  = I2C_STATE_READY;
+    return ERROR;
+  }
+  t = timeout;
 
   /* Start */
   LL_I2C_GenerateStartCondition(I2C1);
