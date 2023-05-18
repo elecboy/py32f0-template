@@ -189,20 +189,22 @@ ErrorStatus BSP_I2C_Transmit(uint8_t devAddress, uint8_t memAddress, uint8_t *pD
   else
   {
     LL_I2C_TransmitData8(I2C1, ((memAddress & 0xFF00) >> 8));
-    while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1);
+    while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1 && t--)
+    if (t == 0) 
+    {
+      i2cState  = I2C_STATE_READY;
+      return ERROR;
+    }
+    t = timeout;
     
     LL_I2C_TransmitData8(I2C1, (memAddress & 0xFF));
   }
-  while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1);
-
-  // LL_I2C_TransmitData8(I2C1, memAddress);
-  // while (LL_I2C_IsActiveFlag_BTF(I2C1) != 1 && t--)
-  // if (t == 0) 
-  // {
-  //   i2cState  = I2C_STATE_READY;
-  //   return ERROR;
-  // }
-  
+  while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1 && t--)
+  if (t == 0) 
+  {
+    i2cState  = I2C_STATE_READY;
+    return ERROR;
+  }
   t = timeout;
 
   /* Transfer data */
@@ -301,7 +303,7 @@ ErrorStatus BSP_I2C_Receive(uint16_t devAddress, uint16_t memAddress, uint8_t *b
     
     LL_I2C_TransmitData8(I2C1, (memAddress & 0xFF));
   }
-  while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1  && t--)
+  while(LL_I2C_IsActiveFlag_TXE(I2C1) != 1 && t--)
   if (t == 0) 
   {
     i2cState  = I2C_STATE_READY;
