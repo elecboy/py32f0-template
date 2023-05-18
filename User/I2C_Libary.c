@@ -10,9 +10,11 @@
 #define I2C1_OWN_ADDRESS7      0x82
 #define MASTER_ADDRESS I2C1_OWN_ADDRESS7
 
+static void APP_CheckEndOfTransfer(void);
+static uint8_t APP_Buffercmp8(uint8_t* pBuffer1, uint8_t* pBuffer2, uint8_t BufferLength);
 
-uint16_t Current_Slave_Addr = 0;
-I2C_Error_TypeDef Error = {0};
+// uint16_t Current_Slave_Addr = 0;
+// I2C_Error_TypeDef Error = {0};
 
 void I2C_WriteByte(uint32_t I2Cx,uint8_t Slave_Addr,uint8_t Data)
 {
@@ -20,12 +22,12 @@ void I2C_WriteByte(uint32_t I2Cx,uint8_t Slave_Addr,uint8_t Data)
 
 void I2C_WriteRegBytes(uint32_t I2Cx , uint8_t Slave_Addr,uint8_t Reg,uint8_t* Data,uint8_t Length)
 {
-    BSP_I2C_Transmit(Slave_Addr, Reg, Data, Length, 1000);
+    BSP_I2C_Transmit(Slave_Addr, Reg, Data, Length, 1000, I2C_MEMADD_SIZE_16BIT);
 }
 
 void I2C_ReadBytes(uint32_t I2Cx ,uint8_t Slave_Addr,uint8_t Register,uint8_t Length,uint8_t* Array,enum LMSB Word)
 {
-    BSP_I2C_Receive(Slave_Addr, Register, Array, Length, 1000);
+    BSP_I2C_Receive(Slave_Addr, Register, Array, Length, 1000, I2C_MEMADD_SIZE_16BIT);
 }
 
 int32_t i2c_read(void *handle, uint8_t address, uint8_t reg, uint8_t *buffer, uint16_t size)
@@ -65,7 +67,7 @@ void i2c_config(void)
   LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C1);
 
   BSP_I2C_Config();
-  BSP_I2C_Scan();
+//   BSP_I2C_Scan();
 }
 
 void enable_i2c_int(void)
@@ -74,5 +76,69 @@ void enable_i2c_int(void)
     // i2c_interrupt_enable(I2C1, I2C_INT_ERR);
     // i2c_interrupt_enable(I2C1, I2C_INT_EV);
     // i2c_interrupt_enable(I2C1, I2C_INT_BUF);
+
+}
+
+#define I2C_ADDRESS        0xA0 >> 1     /* 本机\从机地址 */
+#define I2C_MEMADD_SIZE_8BIT            0x00000001U /* 从机内部地址大小为8位 */
+#define I2C_MEMADD_SIZE_16BIT           0x00000010U /* 从机内部地址大小为16位 */
+uint8_t aTxBuffer[24] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+uint8_t aRxBuffer[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+uint8_t         *pBuffPtr   = 0;
+__IO uint16_t   XferCount   = 0;
+__IO uint32_t   Devaddress  = 0;
+
+/**
+  * @brief  校验数据函数
+  * @param  无
+  * @retval 无
+  */
+static void APP_CheckEndOfTransfer(void)
+{
+  /* 比较发送数据和接收数据 */
+  if(APP_Buffercmp8((uint8_t*)aTxBuffer, (uint8_t*)aRxBuffer, sizeof(aRxBuffer)))
+  {
+    /* 错误处理 */
+    printf("I2C EEPROM Write & Read Test Error!\r\n");
+  }
+  else
+  {
+    printf("I2C EEPROM Write & Read test Good!\r\n");
+  }
+}
+
+/**
+  * @brief  字符比较函数
+  * @param  pBuffer1：待比较缓冲区1
+  * @param  pBuffer2：待比较缓冲区2
+  * @param  BufferLength：待比较字符的个数
+  * @retval 0：比较值相同；1：比较值不同
+  */
+static uint8_t APP_Buffercmp8(uint8_t* pBuffer1, uint8_t* pBuffer2, uint8_t BufferLength)
+{
+  while (BufferLength--)
+  {
+    if (*pBuffer1 != *pBuffer2)
+    {
+      return 1;
+    }
+    pBuffer1++;
+    pBuffer2++;
+  }
+
+  return 0;
+}
+
+
+void test_at24cxx(void)
+{
+    i2c_write(NULL, I2C_ADDRESS, 0x0, (uint8_t *)aTxBuffer, sizeof(aTxBuffer));
+
+    LL_mDelay(10);
+
+    i2c_read(NULL, I2C_ADDRESS, 0x0, (uint8_t *)aRxBuffer, sizeof(aRxBuffer));
+    /* 检查接收到的数据 */
+    APP_CheckEndOfTransfer();
 
 }

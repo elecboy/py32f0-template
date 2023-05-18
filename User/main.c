@@ -22,6 +22,7 @@ int main(void)
   printf("I2C and ADC Timer Trigger DMA Demo\r\nClock: %ld\r\n", SystemCoreClock);
 
   i2c_config();
+  test_at24cxx();
   APP_DMAConfig();
   APP_ADCConfig();
   // Start ADC regular conversion and wait for next external trigger

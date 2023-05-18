@@ -22,11 +22,15 @@ extern "C" {
 #include "py32f0xx_ll_i2c.h"
 #include "py32f0xx_ll_utils.h"
 
+#define I2C_MEMADD_SIZE_8BIT            0x00000001U /* 从机内部地址大小为8位 */
+#define I2C_MEMADD_SIZE_16BIT           0x00000010U /* 从机内部地址大小为16位 */
+
 void BSP_I2C_Config(void);
 void BSP_I2C_Scan(void);
 ErrorStatus BSP_I2C_IsDeviceReady(uint8_t devAddress, uint16_t timeout);
 ErrorStatus BSP_I2C_MasterTransmit(uint16_t devAddress, uint8_t *pData, uint16_t len, uint16_t timeout);
-ErrorStatus BSP_I2C_Transmit(uint8_t devAddress, uint8_t memAddress, uint8_t *pData, uint16_t len, uint16_t timeout);
+ErrorStatus BSP_I2C_Transmit(uint8_t devAddress, uint8_t memAddress, uint8_t *pData, uint16_t len, uint16_t timeout, uint16_t MemAddSize);
+ErrorStatus BSP_I2C_Receive(uint16_t devAddress, uint16_t memAddress, uint8_t *buf, uint16_t size, uint16_t timeout, uint16_t MemAddSize);
 
 #ifdef __cplusplus
 }
