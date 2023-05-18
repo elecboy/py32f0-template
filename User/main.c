@@ -11,20 +11,17 @@
 #include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_bsp_printf.h"
 #include "adc_drv.h"
+#include "I2C_Libary.h"
 
-#define VDDA_APPLI                       ((uint32_t)3300)
-
-__IO uint16_t uhADCxConvertedData_Voltage_mVolt = 0;
-
-uint32_t ADCxConvertedDatas[4];
 
 int main(void)
 {
   BSP_RCC_HSI_PLL48MConfig();
 
   BSP_USART_Config(115200);
-  printf("ADC Timer Trigger DMA Demo\r\nClock: %ld\r\n", SystemCoreClock);
+  printf("I2C and ADC Timer Trigger DMA Demo\r\nClock: %ld\r\n", SystemCoreClock);
 
+  i2c_config();
   APP_DMAConfig();
   APP_ADCConfig();
   // Start ADC regular conversion and wait for next external trigger
@@ -33,22 +30,6 @@ int main(void)
   APP_TimerInit();
 
   while (1);
-}
-
-void APP_TransferCompleteCallback(void)
-{
-  /* Convert the adc value to voltage value */
-  uhADCxConvertedData_Voltage_mVolt = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, ADCxConvertedDatas[0], LL_ADC_RESOLUTION_12B);
-  printf("Channel1 voltage %d mV\r\n", uhADCxConvertedData_Voltage_mVolt);
-
-  uhADCxConvertedData_Voltage_mVolt = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, ADCxConvertedDatas[1], LL_ADC_RESOLUTION_12B);
-  printf("Channel4 voltage %d mV\r\n", uhADCxConvertedData_Voltage_mVolt);
-
-  uhADCxConvertedData_Voltage_mVolt = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, ADCxConvertedDatas[2], LL_ADC_RESOLUTION_12B);
-  printf("Channel Vref voltage %d mV\r\n", uhADCxConvertedData_Voltage_mVolt);
-
-  uhADCxConvertedData_Voltage_mVolt = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, ADCxConvertedDatas[3], LL_ADC_RESOLUTION_12B);
-  printf("Channel TEMP voltage %d mV\r\n\r\n", uhADCxConvertedData_Voltage_mVolt);
 }
 
 void APP_ErrorHandler(void)

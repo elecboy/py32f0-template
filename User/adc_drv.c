@@ -1,7 +1,11 @@
 #include "adc_drv.h"
 
 
-extern uint32_t ADCxConvertedDatas[4];
+#define VDDA_APPLI                       ((uint32_t)3300)
+
+__IO uint16_t uhADCxConvertedData_Voltage_mVolt = 0;
+
+uint32_t ADCxConvertedDatas[4];
 
 void APP_TimerInit(void)
 {
@@ -94,3 +98,18 @@ void APP_DMAConfig(void)
   NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 }
 
+void APP_TransferCompleteCallback(void)
+{
+  /* Convert the adc value to voltage value */
+  uhADCxConvertedData_Voltage_mVolt = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, ADCxConvertedDatas[0], LL_ADC_RESOLUTION_12B);
+  printf("Channel1 voltage %d mV\r\n", uhADCxConvertedData_Voltage_mVolt);
+
+  uhADCxConvertedData_Voltage_mVolt = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, ADCxConvertedDatas[1], LL_ADC_RESOLUTION_12B);
+  printf("Channel4 voltage %d mV\r\n", uhADCxConvertedData_Voltage_mVolt);
+
+  uhADCxConvertedData_Voltage_mVolt = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, ADCxConvertedDatas[3], LL_ADC_RESOLUTION_12B);
+  printf("Channel Vref voltage %d mV\r\n", uhADCxConvertedData_Voltage_mVolt);
+
+  uhADCxConvertedData_Voltage_mVolt = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, ADCxConvertedDatas[2], LL_ADC_RESOLUTION_12B);
+  printf("Channel TEMP voltage %d mV\r\n\r\n", uhADCxConvertedData_Voltage_mVolt);
+}
