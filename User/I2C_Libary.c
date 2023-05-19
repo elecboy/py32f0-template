@@ -10,6 +10,8 @@
 #define I2C1_SDA LL_GPIO_PIN_0
 #define I2C1_OWN_ADDRESS7      0x82
 #define MASTER_ADDRESS I2C1_OWN_ADDRESS7
+#define I2C_MEMADD_SIZE_8BIT            0x00000001U /* 从机内部地址大小为8位 */
+#define I2C_MEMADD_SIZE_16BIT           0x00000010U /* 从机内部地址大小为16位 */
 
 void delay_us(uint32_t nus,uint32_t fac_us);
 /**
@@ -45,25 +47,25 @@ void I2C_WriteByte(uint32_t I2Cx,uint8_t Slave_Addr,uint8_t Data)
   BSP_I2C_MasterTransmit(Slave_Addr, &Data, 1, 1000);
 }
 
-void I2C_WriteRegBytes(uint32_t I2Cx , uint8_t Slave_Addr,uint8_t Reg,uint8_t* Data,uint8_t Length)
+void I2C_WriteRegBytes(uint32_t I2Cx , uint8_t Slave_Addr,uint8_t Reg,uint8_t* Data,uint8_t Length,uint32_t MEM_ADD_Mode)
 {
-    BSP_I2C_Transmit(Slave_Addr, Reg, Data, Length, 1000, I2C_MEMADD_SIZE_16BIT);
+    BSP_I2C_Transmit(Slave_Addr, Reg, Data, Length, 1000, MEM_ADD_Mode);
 }
 
-void I2C_ReadBytes(uint32_t I2Cx ,uint8_t Slave_Addr,uint8_t Register,uint8_t Length,uint8_t* Array,enum LMSB Word)
+void I2C_ReadRegBytes(uint32_t I2Cx ,uint8_t Slave_Addr,uint8_t Register,uint8_t Length,uint8_t* Array,enum LMSB Word,uint32_t MEM_ADD_Mode)
 {
-    BSP_I2C_Receive(Slave_Addr, Register, Array, Length, 1000, I2C_MEMADD_SIZE_16BIT);
+    BSP_I2C_Receive(Slave_Addr, Register, Array, Length, 1000, MEM_ADD_Mode);
 }
 
 int32_t i2c_read(void *handle, uint8_t address, uint8_t reg, uint8_t *buffer, uint16_t size)
 {
-    I2C_ReadBytes(1, address<<1, reg, size, buffer, LSB);
+    I2C_ReadRegBytes(1, address<<1, reg, size, buffer, LSB, I2C_MEMADD_SIZE_8BIT);
     return 1;
 }
 
 int32_t i2c_write(void *handle, uint8_t address, uint8_t reg, const uint8_t *buffer, uint16_t size)
 {
-    I2C_WriteRegBytes(1, address<<1, reg, (uint8_t* )buffer, size);
+    I2C_WriteRegBytes(1, address<<1, reg, (uint8_t* )buffer, size, I2C_MEMADD_SIZE_8BIT);
     return 1;
 }
 
@@ -134,8 +136,6 @@ void enable_i2c_int(void)
 }
 
 #define I2C_ADDRESS        0xA0 >> 1     /* 本机\从机地址 */
-#define I2C_MEMADD_SIZE_8BIT            0x00000001U /* 从机内部地址大小为8位 */
-#define I2C_MEMADD_SIZE_16BIT           0x00000010U /* 从机内部地址大小为16位 */
 uint8_t aTxBuffer[24] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 uint8_t aRxBuffer[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -188,11 +188,11 @@ static uint8_t APP_Buffercmp8(uint8_t* pBuffer1, uint8_t* pBuffer2, uint8_t Buff
 void test_at24cxx(void)
 {
     LL_mDelay(10);
-    i2c_write(NULL, I2C_ADDRESS, 0x0, (uint8_t *)aTxBuffer, sizeof(aTxBuffer));
+    I2C_WriteRegBytes(1, I2C_ADDRESS<<1, 0x0, (uint8_t *)aTxBuffer, sizeof(aTxBuffer), I2C_MEMADD_SIZE_16BIT);
 
     LL_mDelay(10);
 
-    i2c_read(NULL, I2C_ADDRESS, 0x0, (uint8_t *)aRxBuffer, sizeof(aRxBuffer));
+    I2C_ReadRegBytes(1, I2C_ADDRESS<<1, 0x0, sizeof(aRxBuffer), (uint8_t *)aRxBuffer, LSB, I2C_MEMADD_SIZE_16BIT);
     /* 检查接收到的数据 */
     APP_CheckEndOfTransfer();
 

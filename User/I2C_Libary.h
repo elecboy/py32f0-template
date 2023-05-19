@@ -30,8 +30,8 @@ typedef struct I2C_Error I2C_Error_TypeDef;
 void i2c_config(void);
 void enable_i2c_int(void);
 void I2C_WriteByte(uint32_t I2Cx ,uint8_t Slave_Addr, uint8_t Data);
-void I2C_WriteRegBytes(uint32_t I2Cx , uint8_t Slave_Addr,uint8_t Reg,uint8_t* Data,uint8_t Length);
-void I2C_ReadBytes(uint32_t I2Cx ,uint8_t Slave_Addr,uint8_t Register,uint8_t Length,uint8_t* Array,enum LMSB Word);
+void I2C_WriteRegBytes(uint32_t I2Cx , uint8_t Slave_Addr,uint8_t Reg,uint8_t* Data,uint8_t Length,uint32_t MEM_ADD_Mode);
+void I2C_ReadRegBytes(uint32_t I2Cx ,uint8_t Slave_Addr,uint8_t Register,uint8_t Length,uint8_t* Array,enum LMSB Word,uint32_t MEM_ADD_Mode);
 
 int32_t i2c_read(void *handle, uint8_t address, uint8_t reg, uint8_t *buffer, uint16_t size);
 int32_t i2c_write(void *handle, uint8_t address, uint8_t reg, const uint8_t *buffer, uint16_t size);

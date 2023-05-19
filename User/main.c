@@ -23,7 +23,7 @@ int main(void)
   printf("I2C and ADC Timer Trigger DMA Demo\r\nClock: %ld\r\n", SystemCoreClock);
 
   i2c_config();
-  // test_at24cxx();
+  test_at24cxx();
   MPU6050_Config();
   // APP_DMAConfig();
   // APP_ADCConfig();
