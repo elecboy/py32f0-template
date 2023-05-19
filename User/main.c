@@ -12,6 +12,7 @@
 #include "py32f0xx_bsp_printf.h"
 #include "adc_drv.h"
 #include "I2C_Libary.h"
+#include "MPU6050.h"
 
 
 int main(void)
@@ -22,15 +23,20 @@ int main(void)
   printf("I2C and ADC Timer Trigger DMA Demo\r\nClock: %ld\r\n", SystemCoreClock);
 
   i2c_config();
-  test_at24cxx();
-  APP_DMAConfig();
-  APP_ADCConfig();
+  // test_at24cxx();
+  MPU6050_Config();
+  // APP_DMAConfig();
+  // APP_ADCConfig();
   // Start ADC regular conversion and wait for next external trigger
-  LL_ADC_REG_StartConversion(ADC1);
+  // LL_ADC_REG_StartConversion(ADC1);
 
-  APP_TimerInit();
+  // APP_TimerInit();
 
-  while (1);
+  while (1)
+  {
+    MPU6050_Read();
+    LL_mDelay(100);
+  }
 }
 
 void APP_ErrorHandler(void)

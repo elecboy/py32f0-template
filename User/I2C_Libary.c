@@ -11,6 +11,29 @@
 #define I2C1_OWN_ADDRESS7      0x82
 #define MASTER_ADDRESS I2C1_OWN_ADDRESS7
 
+void delay_us(uint32_t nus,uint32_t fac_us);
+/**
+  * @brief  us级延时
+  * @param  nus = 延时的us量,
+  *         fac_us=系统时钟/1000000
+  * @retval 无
+  */
+void delay_us(uint32_t nus,uint32_t fac_us)
+{
+  LL_SYSTICK_DisableIT();
+  uint32_t temp;
+  SysTick->LOAD=nus*fac_us;
+  SysTick->VAL=0x00;
+  SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk;
+  do
+  {
+    temp=SysTick->CTRL;
+  }
+  while((temp&0x01)&&!(temp&(1<<16)));
+  SysTick->CTRL=0x00;
+  SysTick->VAL =0x00;
+}
+
 static void APP_CheckEndOfTransfer(void);
 static uint8_t APP_Buffercmp8(uint8_t* pBuffer1, uint8_t* pBuffer2, uint8_t BufferLength);
 
@@ -44,8 +67,37 @@ int32_t i2c_write(void *handle, uint8_t address, uint8_t reg, const uint8_t *buf
     return 1;
 }
 
+void i2c_bus_reset(void)
+{
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOF);
+
+  // PF1 SCL/PF0 SDA 
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_0 | LL_GPIO_PIN_1;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  LL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+  delay_us(10, 48);
+  LL_GPIO_SetOutputPin(GPIOF, LL_GPIO_PIN_0 | LL_GPIO_PIN_1);
+
+  for(uint8_t i=0; i<9; i++)
+  {
+    LL_GPIO_SetOutputPin(GPIOF, LL_GPIO_PIN_1);
+    delay_us(10, 48);
+    LL_GPIO_ResetOutputPin(GPIOF, LL_GPIO_PIN_1);
+    delay_us(10, 48);
+  }
+  LL_GPIO_SetOutputPin(GPIOF, LL_GPIO_PIN_1);
+
+}
+
 void i2c_config(void)
 {
+  i2c_bus_reset();
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOF);
@@ -69,7 +121,7 @@ void i2c_config(void)
   LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C1);
 
   BSP_I2C_Config();
-//   BSP_I2C_Scan();
+  //BSP_I2C_Scan();
 }
 
 void enable_i2c_int(void)
