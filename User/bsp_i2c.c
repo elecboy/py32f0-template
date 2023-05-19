@@ -264,7 +264,6 @@ ErrorStatus BSP_I2C_Receive(uint16_t devAddress, uint16_t memAddress, uint8_t *b
   }
   t = timeout;
 
-
   /* Send slave address */
   LL_I2C_TransmitData8(I2C1, (devAddress & (uint8_t)(~0x01)));
   /* Wait the status of Address sent (master mode) */
@@ -330,21 +329,116 @@ ErrorStatus BSP_I2C_Receive(uint16_t devAddress, uint16_t memAddress, uint8_t *b
     return ERROR;
   }
   t = timeout;
-  LL_I2C_ClearFlag_ADDR(I2C1);
 
-  while (size--)
+  // LL_I2C_ClearFlag_ADDR(I2C1);
+  // while (size--)
+  // {
+  //   while(LL_I2C_IsActiveFlag_RXNE(I2C1) != 1 && t--)
+  //   if (t == 0) 
+  //   {
+  //     i2cState  = I2C_STATE_READY;
+  //     return ERROR;
+  //   }
+  //   t = timeout;
+  //   *buf++ = LL_I2C_ReceiveData8(I2C1);
+  // }
+  // LL_I2C_AcknowledgeNextData(I2C1, LL_I2C_NACK);
+  // LL_I2C_GenerateStopCondition(I2C1);
+
+  /* 接收数据 */
+  if (size == 0U)
   {
-    while(LL_I2C_IsActiveFlag_RXNE(I2C1) != 1 && t--)
-    if (t == 0) 
-    {
-      i2cState  = I2C_STATE_READY;
-      return ERROR;
-    }
-    t = timeout;
-    *buf++ = LL_I2C_ReceiveData8(I2C1);
+    LL_I2C_ClearFlag_ADDR(I2C1);
+    LL_I2C_GenerateStopCondition(I2C1);
   }
-  LL_I2C_AcknowledgeNextData(I2C1, LL_I2C_NACK);
-  LL_I2C_GenerateStopCondition(I2C1);
+  else if(size == 1U)
+  {
+    LL_I2C_AcknowledgeNextData(I2C1, LL_I2C_NACK);
+    
+    __disable_irq();
+    LL_I2C_ClearFlag_ADDR(I2C1);
+    LL_I2C_GenerateStopCondition(I2C1);
+    __enable_irq();
+  }
+  else if(size == 2U)
+  {
+    LL_I2C_EnableBitPOS(I2C1);
+    
+    __disable_irq();
+    LL_I2C_ClearFlag_ADDR(I2C1);
+    LL_I2C_AcknowledgeNextData(I2C1, LL_I2C_NACK);
+    __enable_irq();
+  }
+  else
+  {
+    LL_I2C_AcknowledgeNextData(I2C1, LL_I2C_ACK);
+    LL_I2C_ClearFlag_ADDR(I2C1);
+  }
+  
+  while (size > 0U)
+  {
+    if (size <= 3U)
+    {
+      if (size == 1U)
+      {
+        while(LL_I2C_IsActiveFlag_RXNE(I2C1) != 1);
+        *buf = LL_I2C_ReceiveData8(I2C1);
+        buf++;
+        size--;
+      }
+      else if (size == 2U)
+      {
+        while(LL_I2C_IsActiveFlag_BTF(I2C1) != 1);
+        
+        __disable_irq();
+        LL_I2C_GenerateStopCondition(I2C1);
+        *buf = LL_I2C_ReceiveData8(I2C1);
+        buf++;
+        size--;
+        __enable_irq();
+        
+        *buf = LL_I2C_ReceiveData8(I2C1);
+        buf++;
+        size--;
+      }
+      else
+      {
+        while(LL_I2C_IsActiveFlag_BTF(I2C1) != 1);
+        
+        LL_I2C_AcknowledgeNextData(I2C1, LL_I2C_NACK);
+        
+        __disable_irq();
+        *buf = LL_I2C_ReceiveData8(I2C1);
+        buf++;
+        size--;
+        while(LL_I2C_IsActiveFlag_BTF(I2C1) != 1);
+        LL_I2C_GenerateStopCondition(I2C1);
+        *buf = LL_I2C_ReceiveData8(I2C1);
+        buf++;
+        size--;
+        __enable_irq();
+        
+        *buf = LL_I2C_ReceiveData8(I2C1);
+        buf++;
+        size--;
+      }
+    }
+    else
+    {
+      while(LL_I2C_IsActiveFlag_RXNE(I2C1) != 1);
+      
+      *buf = LL_I2C_ReceiveData8(I2C1);
+       buf++;
+       size--;
+      
+      if (LL_I2C_IsActiveFlag_BTF(I2C1) == 1)
+      {
+        *buf = LL_I2C_ReceiveData8(I2C1);
+        buf++;
+        size--;
+      }
+    }
+  }
 
   i2cState = I2C_STATE_READY;
   return SUCCESS;

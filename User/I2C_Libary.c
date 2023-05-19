@@ -97,7 +97,7 @@ void i2c_bus_reset(void)
 
 void i2c_config(void)
 {
-  i2c_bus_reset();
+  // i2c_bus_reset();
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOF);
