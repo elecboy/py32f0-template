@@ -1,5 +1,5 @@
 #include "adc_drv.h"
-
+#include "py32f0xx_bsp_printf.h"
 
 #define VDDA_APPLI                       ((uint32_t)3300)
 
@@ -11,7 +11,7 @@ void APP_TimerInit(void)
 {
   LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM1);
   LL_TIM_SetPrescaler(TIM1, (SystemCoreClock / 6000) - 1);
-  LL_TIM_SetAutoReload(TIM1, 1000 - 1);
+  LL_TIM_SetAutoReload(TIM1, 6000 - 1);
   /* Triggered by update */
   LL_TIM_SetTriggerOutput(TIM1, LL_TIM_TRGO_UPDATE);
 

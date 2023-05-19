@@ -1,6 +1,7 @@
 #include <string.h>
 #include "bsp_i2c.h"
 #include "I2C_Libary.h"
+#include "py32f0xx_bsp_printf.h"
 
 #define MAX_ERROR_NUM 8
 
@@ -18,6 +19,7 @@ static uint8_t APP_Buffercmp8(uint8_t* pBuffer1, uint8_t* pBuffer2, uint8_t Buff
 
 void I2C_WriteByte(uint32_t I2Cx,uint8_t Slave_Addr,uint8_t Data)
 {
+  BSP_I2C_MasterTransmit(Slave_Addr, &Data, 1, 1000);
 }
 
 void I2C_WriteRegBytes(uint32_t I2Cx , uint8_t Slave_Addr,uint8_t Reg,uint8_t* Data,uint8_t Length)
